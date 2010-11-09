@@ -308,8 +308,8 @@ return(C_r)
 		n.2 = ncol(exprs.2)
 		for(j in 1:N) {
 			seq <- sample(n.1+n.2)
-			exprs_1 <- exprs[,seq[1:n.1]];
-			exprs_2 <- exprs[,seq[(n.1+1):(n.1+n.2)]];
+			exprs.1 <- exprs[,seq[1:n.1]];
+			exprs.2 <- exprs[,seq[(n.1+1):(n.1+n.2)]];
 			cor_filtered = switch(method,
 		rth = {
   			genes <- rownames(exprs.1)
@@ -346,10 +346,10 @@ return(C_r)
 			p <- sum(LNED.result[k]<dC0)/(N*m);
 			p.value <- c(p.value,p);
 		}
-  		FWER <- p.adjust(p.value,method="BH")
-  		Result <- cbind(LNED.result,number_uniq,p.value,FWER);
+  		q.value <- p.adjust(p.value,method="BH")
+  		Result <- cbind(LNED.result,number_uniq,p.value,q.value);
   		row.names(Result) <- genes;
-  		colnames(Result) <- paste(c("dC","length","p.value","FWER"));
+  		colnames(Result) <- paste(c("dC","length","p.value","q.value"));
   		# dec.idx <-sort(as.numeric(Result[,4]),method = "quick", index.return=TRUE, decreasing=FALSE)$ix
   		# Result <- Result[dec.idx,]
 	}

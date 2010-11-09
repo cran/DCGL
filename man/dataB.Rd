@@ -13,12 +13,10 @@ A data frame with 1000 observations  20 variables.
 }
 }
 \details{
-  We simulated three dataset pairs (denoted dataA, dataB, dataC) using SynTReN based on a predefined E.coli gene regulatory network of a total of 1300 genes (Van den Bulcke, et al., 2006). 
-  Specifically, we selected a sub-network of 1000 genes as the original network, 
-  and exerted artificial perturbation on 10% of its links as if it was from a different condition. 
-  The three groups had different perturbation types. 
-  For dataB, we used regulation-elimination (removing a link between a pair of genes). 
-  In each data matrix, the first ten columns correspond to one condition and the second ten correspond to the other.
+We simulated three dataset pairs (denoted dataA, dataB, dataC) using SynTReN based on a predefined E.coli gene regulatory network of a total of 1300 genes (Van den Bulcke, et al., 2006). 
+Specifically, we selected a sub-network of 1000 genes as the original network,and exerted artificial perturbation on 10 percents of its links as if it was from a different condition. 
+The three groups had different perturbation types.For dataB, we used regulation-alteration (alter a link between a pair of genes between repress and active). 
+In each data matrix, the first ten columns correspond to one condition and the second ten correspond to the other.
 }
 \references{
   Yu H., Liu B-H., et al., Link-specific Quantitative Methods to Identify Differentially Coexpressed Genes and Gene Pairs. Submitted. 2010
