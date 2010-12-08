@@ -118,8 +118,12 @@ return(C_r)
   	diag(p0.1) <- NA
   	diag(p0.2) <- NA
 
-  	q.1 <- p.adjust(p0.1,method="BH")
-  	q.2 <- p.adjust(p0.2,method="BH")
+  	q.1<- p.adjust(as.numeric(p0.1), method = "BH")
+       q.2<- p.adjust(as.numeric(p0.2), method = "BH")
+       dim(q.1)<- dim(p0.1); 
+       dim(q.2)<- dim(p0.2)
+       #q.1 <- p.adjust(p0.1,method="BH")
+  	#q.2 <- p.adjust(p0.2,method="BH")
   	diag(q.1) <- 1
   	diag(q.2) <- 1
   	

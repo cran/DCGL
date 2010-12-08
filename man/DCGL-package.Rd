@@ -14,8 +14,8 @@ Five algorithms,named DCp, DCe, ASC, LRC and WGCNA, are provided for DCG-identif
 \tabular{ll}{
 Package: \tab DCGL\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2010-08-18\cr
+Version: \tab 1.02\cr
+Date: \tab 2010-12-08\cr
 License: \tab GPL (>2)\cr
 LazyLoad: \tab yes\cr
 }
