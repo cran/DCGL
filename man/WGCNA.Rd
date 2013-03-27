@@ -1,10 +1,10 @@
 \name{WGCNA}
 \alias{WGCNA}
-\title{ To identify DCGs (Differentially-Coexpressed genes) based on the 'Weighted Gene Coexpression Network Analysis' }
+\title{ Identify DCGs (Differential Coexpressed Genes) based on the 'Weighted Gene Coexpression Network Analysis' }
 \description{
   A method to pick out DCGs from microarray data based on 'Weighted Gene Coexpression Network Analysis' (WGCNA) (Mason, MJ. Et al. 2009; van Nas et al. 2009 ). }
 \usage{
-WGCNA(exprs.1, exprs.2, power,variant)
+WGCNA(exprs.1, exprs.2, power = 12, variant = "WGCNA")
 }
 \arguments{
    \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
@@ -15,10 +15,11 @@ WGCNA(exprs.1, exprs.2, power,variant)
 
 }
 \details{
- The 'weighted gene coexpression network analysis' (WGCNA) weights links with correlation coefficients and compares the sums of the correlation coefficients of a gene (Mason, et al., 2009; van Nas, et al., 2009). Correlation coefficients are firstly softly thresholded by a 'power'.
+ The 'weighted gene coexpression network analysis' (WGCNA) weights links with correlation coefficients and compares the sums of the correlation 
+ coefficients of a gene (Mason, et al., 2009; van Nas, et al., 2009). Correlation coefficients are firstly softly thresholded by a 'power'.
  }
 \value{
-  \item{WGCNA }{score of 'WGCNA' to identify DCGs}
+  \item{WGCNA}{score of 'WGCNA' to identify DCGs}
 }
 \references{   
 Mason, M.J., et al. (2009) Signed weighted gene co-expression network analysis of transcriptional regulation in murine embryonic stem cells, BMC Genomics, 10, 327.
@@ -27,7 +28,7 @@ van Nas, A., Guhathakurta, D., Wang, S.S., Yehya, N., Horvath, S., Zhang, B., In
  }
 \author{ Bao-Hong Liu, Hui Yu }
 \examples{
-data(dataC)
-WGCNA(dataC[1:100,1:10],dataC[1:100,11:20],power=12,variant='WGCNA')
+data(exprs)
+WGCNA(exprs[1:100,1:16],exprs[1:100,17:63],power=12,variant='WGCNA')
 }
 \keyword{ DCGs }

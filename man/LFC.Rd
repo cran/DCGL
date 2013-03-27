@@ -2,18 +2,18 @@
 \alias{LFC}
 \title{ Select DCLs based on 'Limit Fold Change' model }
 \description{
-  The limit fold change (LFC) modelis a robust statistical method modeling the relationship between maximum coexpression and log coexpression ratio of genes.
+  The limit fold change (LFC) model is a robust statistical method modeling the relationship between maximum coexpression and log coexpression ratio of genes.
   (Mutch, et al., 2002). The algorithm starts with a set of gene coexpression value pairs each 
   comprising two coexpression values of a gene pair calculated under two different conditions respectively.
 }
 \usage{
-LFC(exprs, nbins, p, sign, figname = "LFC.jpeg")
+LFC(exprs, nbins = 20, p = 0.1, sign, figname = "LFC.jpeg")
 }
 \arguments{
   \item{exprs}{ a two-column data matrix, with column one the coexpression values for one condition and column two those for another. }
   \item{nbins}{ number of x bins for fitting y=a+(b/x). }
   \item{p}{ the fraction at y axis for determining boundary points; must be within [0,1]. }
-  \item{sign}{ Specifies the sign type of exprs. Exprs is either 'same-sign', with coexpression pairs of the same sign, or 'different-sign', with coexpression pairs of opposite signs. }
+  \item{sign}{ specifies the sign type of exprs. Exprs is either 'same-sign', with coexpression pairs of the same sign, or 'different-sign', with coexpression pairs of opposite signs. }
   \item{figname}{ names of figures of the LFC fitting results.}
 }
 \details{
