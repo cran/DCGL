@@ -11,7 +11,7 @@ LRC(exprs.1, exprs.2, link.method = c("qth", "rth", "percent")[1], cutoff)
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
   \item{exprs.2}{ a data frame or matrix for condition B, with rows as variables (genes) and columns as samples. }
   \item{link.method}{ a character string indicating link filtering method, default is 'qth'. }
-  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on Linkfilter.method. must be within [0,1]. }
+  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on link.method. must be within [0,1]. }
 }
 \details{
  'Log Ratio of Connections' (LRC) calculates the logarithm of the ratio of the connectivities of a gene between two conditions (Reverter, et al., 2006). A connectivity of zero is changed to one.

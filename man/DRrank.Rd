@@ -48,21 +48,28 @@ Reverter, A., Hudson, N. J., Nagaraj, S. H., Perez-Enciso, M., Dalrymple, B. P.,
 
 \examples{
 data(exprs)
-## divide exprs into two parts corresponding to condition 1 (exprs.1) and condition 2 (exprs.2) respectively
-exprs.1<-exprs[1:50,1:16]
-exprs.2<-exprs[1:50,17:63]
+## divide exprs into two parts corresponding to condition 1 
+## (exprs.1) and condition 2 (exprs.2) respectively
+exprs.1<-exprs[1:100,1:16]
+exprs.2<-exprs[1:100,17:63]
 
 data(tf2target)
 data(tf)
 data(exprs_design)
-DCp.res<-DCp(exprs.1,exprs.2,link.method = 'qth',cutoff=0.25)
-DCe.res<-DCe(exprs.1,exprs.2,link.method = 'qth',cutoff=0.25,nbins=10,p=0.1)
+DCp.res<-DCp(exprs.1,exprs.2,
+	link.method = 'qth',cutoff=0.25)
+DCe.res<-DCe(exprs.1,exprs.2,
+	link.method = 'qth',cutoff=0.25,nbins=10,p=0.1)
 DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.4)
-DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs[1:50,])
+\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs[1:100,])}
 
 ## rank all the potential TFs
-DRrank.res<-DRrank(exprs[1:50,],exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res)
-DRrank.res[1:3,]
+\donttest{DRrank.res<-DRrank(exprs[1:100,],
+	exprs.1,exprs.2,
+	tf,tf2target,exprs_design,
+	p.value=0.05,DRsort.res)
+}
+\donttest{DRrank.res[1:3,]}
 }
 
 \keyword{ Regulator Rank }

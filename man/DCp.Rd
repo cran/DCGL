@@ -1,18 +1,24 @@
 \name{DCp}
 \alias{DCp}
-\title{ Identify DCGs (Differential Coexpression Genes) based on the 'Differential Coexpression Profile' }
+\title{ Identify DCGs (Differential Coexpressed Genes) based on the 'Differential Coexpression Profile' }
 \description{
    A method to pick out DCGs from microarray data based on a novel concept of 'Differential Coexpression Profiles' (DCp) (Yu et al. 2010).
 }
 \usage{
-DCp(exprs.1, exprs.2, r.method = c("pearson", "spearman")[1], link.method = c("qth", "rth", "percent")[1], cutoff = 0.25, N = 0, N.type = c("pooled", "gene_by_gene")[1], q.method = c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY", "fdr")[1])
+DCp(exprs.1, exprs.2, 
+	r.method = c("pearson", "spearman")[1], 
+	link.method = c("qth", "rth", "percent")[1], 
+	cutoff = 0.25, 
+	N = 0, 
+	N.type = c("pooled", "gene_by_gene")[1], 
+	q.method = c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY", "fdr")[1])
 }
 \arguments{
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
   \item{exprs.2}{ a data frame or matrix for condition B, with rows as variables (genes) and columns as samples. }
   \item{r.method}{ a character string indicating which correlation coefficient (or covariance) is to be computed. One of "pearson" (default) or "spearman", can be abbreviated. }
   \item{link.method}{ a character string indicating link filtering method, default is 'qth'. }
-  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on Linkfilter.method. must be within [0,1]. }
+  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on link.method. must be within [0,1]. }
   \item{N}{ permutation times. If N>0, the permutation step will be implemented. The default value for N is 0.}
   \item{N.type}{a character string indicating permutation type, default is 'pooled'.}
   \item{q.method}{ a character string indicating which correction method to be utilized. the default is 'BH'.}
@@ -41,10 +47,14 @@ Yu H., Liu B-H., et al., Link-specific Quantitative Methods to Identify Differen
 data(exprs)
 
 ## calculate differential coexpressed genes by DCp without permutation
-DCp(exprs[1:100,1:16],exprs[1:100,17:63],link.method='qth',cutoff=0.25,N=0)
+DCp(exprs[1:50,1:16],exprs[1:50,17:63],
+	link.method='qth',cutoff=0.25,
+	N=0)
 
 ## calculate differential coexpressed genes by DCp with 100 times permutation
-DCp(exprs[1:100,1:16],exprs[1:100,17:63],link.method='qth',cutoff=0.25,N=100)
+DCp(exprs[1:50,1:16],exprs[1:50,17:63],
+	link.method='qth',cutoff=0.25,
+	N=100)
 }
 \keyword{ DCGs }
 \keyword{ DCLs }

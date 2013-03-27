@@ -1,18 +1,24 @@
 \name{DCe}
 \alias{DCe}
-\title{ Identify DCGs (Differential Coexpression Genes) and DCLs (Differential Coexpression Links) }
+\title{ Identify DCGs (Differential Coexpressed Genes) and DCLs (Differential Coexpressed Links) }
 \description{
   The algorithm first determines DCLs using a LFC model originally proposed for differential expression analysis, and then determines DCGs 
   with their surrounding links enriched for DCLs.   
 }
 \usage{
-DCe(exprs.1, exprs.2, link.method=c('qth','rth','percent')[1],cutoff, r.method, q.method, nbins=20, p=0.1,figname=c('LFC.s.jpeg','LFC.d.jpeg'))
+DCe(exprs.1, exprs.2, 
+	link.method=c('qth','rth','percent')[1],
+	cutoff, 
+	r.method, 
+	q.method, 
+	nbins=20, p=0.1,
+	figname=c('LFC.s.jpeg','LFC.d.jpeg'))
 }
 \arguments{
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
   \item{exprs.2}{ a data frame or matrix for condition B, with rows as variables (genes) and columns as samples. }
   \item{link.method}{ a character string indicating link filtration method, default is 'qth'. }
-  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on Linkfilter.method. must be within [0,1]. }
+  \item{cutoff}{ cutoff used for link filtration, can be rth, qth, or percent depending on link.method. must be within [0,1]. }
   \item{r.method}{ a character string indicating which correlation coefficient (or covariance) is to be computed. One of "pearson" (default) or "spearman", can be abbreviated. }
   \item{q.method}{ a character string indicating which correction method to be utilized. the default is 'BH'.}
   \item{nbins}{ number of x bins for fitting y=a+(b/x). }
@@ -38,7 +44,11 @@ DCe(exprs.1, exprs.2, link.method=c('qth','rth','percent')[1],cutoff, r.method, 
 
 \examples{
 data(exprs)
-DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],link.method = 'qth',cutoff=0.25,nbins=20,p=0.1)
+## Identifying DCGs and DCLs by DCe method
+DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],
+	link.method = 'qth',
+	cutoff=0.25,
+	nbins=20,p=0.1)
 DCe.res$DCGs[1:3,]
 DCe.res$DCLs[1:3,]
 }

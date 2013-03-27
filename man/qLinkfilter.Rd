@@ -5,7 +5,10 @@
   Gene links with q-values of coexpression value pairs in either of two conditions higher than the cutoff are retained, while the coexpression values of other links are set to zero.
 }
 \usage{
-qLinkfilter(exprs.1, exprs.2, cutoff = 0.25, r.method = c("pearson", "spearman")[1], q.method = c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY", "fdr")[1])
+qLinkfilter(exprs.1, exprs.2, 
+	cutoff = 0.25, 
+	r.method = c("pearson", "spearman")[1], 
+	q.method = c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY", "fdr")[1])
 }
 \arguments{
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
@@ -25,6 +28,9 @@ A list with two components of data frames, one for filtered data of condition A,
 \author{ Bao-hong Liu, Hui Yu, Jing Yang }
 \examples{
 data(exprs)
-qLinkfilter(exprs[1:100,1:16],exprs[1:100,17:63],cutoff=0.25,r.method='pearson',q.method='BH')
+qLinkfilter(exprs[1:100,1:16],exprs[1:100,17:63],
+	cutoff=0.25,
+	r.method='pearson',
+	q.method='BH')
 }
 \keyword{link filtering}

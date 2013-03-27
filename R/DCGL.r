@@ -316,7 +316,6 @@ return(C_r)
 
 "DCp" <- function(exprs.1,exprs.2,r.method=c('pearson','spearman')[1],link.method=c('qth','rth','percent')[1],cutoff=0.25,N=0,N.type=c('pooled','gene_by_gene')[1],q.method=c("BH","holm", "hochberg", "hommel", "bonferroni", "BY","fdr")[1]) {  
 	cor.filtered.1<-cor.filtered.2<-NULL
-	#Linkfilter.method=c('rth','qth','percent')
 	if (nrow(exprs.1)!=nrow(exprs.2)) stop('the two expression matrices must have the same number of rows (genes).')
 	if (length(rownames(exprs.1))==0 | length(rownames(exprs.2))==0) stop('the expression matrices must have row names specifying the gene names.')
 	if ( min(ncol(exprs.1),ncol(exprs.2))<3 ){
@@ -1115,7 +1114,8 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	fit<-lmFit(exprs,exprs_design)
 	fit<-eBayes(fit)
 	DERes<-topTable(fit,coef=colnames(exprs_design)[2],number=length(fit))
-	DERes_adjp0.05<-DERes[DERes[,'adj.P.Val']<p.value,c('ID','adj.P.Val')]##取fdr即adjust p value小于0.05的DE##
+#	DERes_adjp0.05<-DERes[DERes[,'adj.P.Val']<p.value,c('ID','adj.P.Val')]##取fdr即adjust p value小于0.05的DE## the code which suit for old limma package.
+	DERes_adjp0.05<-data.frame(ID=row.names(DERes[DERes[,'adj.P.Val']<p.value,]),adj.P.Val=DERes[DERes[,'adj.P.Val']<p.value,'adj.P.Val'])
 
 	DERes_adjp0.05.exprs.1<-unique(merge(exprs.1,DERes_adjp0.05,by.x="row.names",by.y="ID",all.y=T))##取DE的表达谱##
 	DERes_adjp0.05.exprs.2<-unique(merge(exprs.2,DERes_adjp0.05,by.x="row.names",by.y="ID",all.y=T))

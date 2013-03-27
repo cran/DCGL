@@ -1,7 +1,7 @@
 \name{ASC}
 \alias{ASC}
 \title{
-Identify DCGs (Differential Coexpression Genes) based on 'Average Specific Connection' 
+Identify DCGs (Differential Coexpressed Genes) based on 'Average Specific Connection' 
 }
 \description{
 A method to pick out DCGs from microarray data based on 'Average Specific Connection' (ASC) (Choi et al. 2005). 
@@ -29,6 +29,7 @@ Bao-Hong Liu, Hui Yu
 }
 \examples{
 data(exprs)
-ASC(exprs[1:100,1:16],exprs[1:100,17:63],link.method = 'qth', cutoff=0.25)
+ASC(exprs[1:100,1:16],exprs[1:100,17:63],
+	link.method = 'qth', cutoff=0.25)
 }
 \keyword{ DCGs }

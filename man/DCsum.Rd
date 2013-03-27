@@ -26,8 +26,10 @@ DCsum(DCp.res, DCe.res, DCpcutoff = 0.25, DCecutoff = 0.25)
 \author{ Jing Yang, Hui Yu}
 \examples{
 data(exprs)
-DCp.res<-DCp(exprs[1:100,1:16],exprs[1:100,17:63],link.method = 'qth',cutoff=0.25)
-DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],link.method = 'qth',cutoff=0.25,nbins=20,p=0.1)
+DCp.res<-DCp(exprs[1:100,1:16],exprs[1:100,17:63],
+	link.method = 'qth',cutoff=0.25)
+DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],
+	link.method = 'qth',cutoff=0.25,nbins=20,p=0.1)
 DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.25)
 
 ## Differentially Coexpressed Genes after combination
