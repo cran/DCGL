@@ -5,7 +5,8 @@
   Keep a fraction of the links (gene pairs) with the higher correlation values than user given threshold (specified with 'cutoff').
 }
 \usage{
-rLinkfilter(exprs.1, exprs.2, cutoff = 0.8, r.method = c("pearson", "spearman")[1])
+rLinkfilter(exprs.1, exprs.2, cutoff = 0.8, 
+	r.method = c("pearson", "spearman")[1])
 }
 \arguments{
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }

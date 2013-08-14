@@ -20,8 +20,8 @@ knowledge.
 \tabular{ll}{
 Package: \tab DCGL\cr
 Type: \tab Package\cr
-Version: \tab 2.0\cr
-Date: \tab 2012-12-14\cr
+Version: \tab 2.0.2\cr
+Date: \tab 2013-08-14\cr
 License: \tab GPL (>2)\cr
 LazyLoad: \tab yes\cr
 }
@@ -43,24 +43,28 @@ data(exprs_design)
 
 ## divide exprs into two parts corresponding to condition 1 
 ##(exprs.1) and condition 2 (exprs.2) respectively
+exprs<-exprs[1:100,]
 exprs.1<-exprs[1:100,1:16] 
 exprs.2<-exprs[1:100,17:63]
 
-DCp.res<-DCp(exprs.1,exprs.2,
+\donttest{DCp.res<-DCp(exprs.1,exprs.2,
 	link.method='qth',cutoff=0.25,N=0)
-DCe.res<-DCe(exprs.1,exprs.2,
+}
+\donttest{DCe.res<-DCe(exprs.1,exprs.2,
 	link.method='qth',
 	cutoff=0.25,
 	nbins=10,p=0.1)
+}
 
 ## combine two Differential Co-expression Analysis results
-DCsum.res<-DCsum(DCp.res,DCe.res,
+\donttest{DCsum.res<-DCsum(DCp.res,DCe.res,
 	DCpcutoff=0.25,DCecutoff=0.4)
 DCsum.res$DCGs[1:3,]
 DCsum.res$DCLs[1:3,]
+}
 
 ## sort out differentially regulated genes and differentially regulated links
-\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs[1:100,])}
+\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs)}
 
 ## plot differentially regulated links
 \donttest{DRplot.res<-DRplot(DRsort.res,
@@ -70,9 +74,10 @@ DCsum.res$DCLs[1:3,]
 }
 
 ## rank regulators by three algorithms
-\donttest{DRrank.res<-DRrank(exprs[1:100,],exprs.1,exprs.2,
+\donttest{DRrank.res<-DRrank(exprs,exprs.1,exprs.2,
 	tf,tf2target,
 	exprs_design,p.value=0.05,
-	DRsort.res)
+	DRsort.res,
+	Permutation_Times=0)
 }
 }

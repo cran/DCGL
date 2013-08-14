@@ -557,7 +557,6 @@ function(exprs.1,exprs.2,link.method=c('qth','rth','percent')[1],cutoff=0.25,r.m
 		DCL.switched<- DCL.switched[middle,]
 	}
 
-	library(igraph);
 ####################################
 ## All links
 ####################################
@@ -924,7 +923,6 @@ function(exprs.1,exprs.2,power=12,variant='WGCNA') {
   # TF2target_DCL: Tf2target identified from DCLs
   #######################################################################################################################################
  visTF2target_DCL<-function(TF2target_DCL.int,vsize=vsize,asize=asize,lcex=lcex,ewidth=ewidth,figname){
-	if (!require(igraph)) stop('package igraph is required!')
 	if ( is.null(TF2target_DCL.int)) stop ('There are no interesting genes in TF2target_DCL.\n')
 	if ( nrow(TF2target_DCL.int)==0 ) stop('There are no TF2target_DCL.\n')
 	# colnames of DCListf2target c('TF','keggname.TF','Gene','keggname.Gene','DCG')
@@ -972,7 +970,6 @@ function(exprs.1,exprs.2,power=12,variant='WGCNA') {
   # TF_bridged_DCL: both genes in a DCL regulated by a common regulator.
   #####################################################################################################################################
  visTF_bridged_DCL <- function(TF2target_DCL,TF_bridged_DCL,vsize=vsize,asize=asize,lcex=lcex,ewidth=ewidth,figname){
-	if (!require(igraph)) stop('package igraph is required!\n')
 	if ( is.null(TF_bridged_DCL) ) stop('There are no interesting genes in TF_bridged_DCL.\n')
 	if (nrow(TF_bridged_DCL)==0) stop('There are no TF_bridged_DCL.\n')
 	if (length(TF_bridged_DCL[is.na(TF_bridged_DCL[,'internal.TF']),'Gene.1']) >0 ){
@@ -1099,7 +1096,7 @@ function(DRsort.res,type=c('both','TF2target_DCL','TF_bridged_DCL')[1],intgeneli
   # exprs_design: a data frame or matrix for displaying microarray experimant design.
   ##################################################################################################################
 "DRrank"<-
-function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res){
+function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res,Permutation_Times=0){
 ############################################RIF#####################################
 	reg.exprs.1<-unique(merge(exprs.1,tf,by.x="row.names",by.y="TF"))##取tf的表达谱##
 	rownames(reg.exprs.1)<-reg.exprs.1[,1]
@@ -1110,7 +1107,6 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	rownames(reg.exprs.2)<-reg.exprs.2[,1]
 	reg.exprs.2<-reg.exprs.2[,2:ncol(reg.exprs.2)]
 
-	library(limma)
 	fit<-lmFit(exprs,exprs_design)
 	fit<-eBayes(fit)
 	DERes<-topTable(fit,coef=colnames(exprs_design)[2],number=length(fit))
@@ -1118,7 +1114,6 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	DERes_adjp0.05<-data.frame(ID=row.names(DERes[DERes[,'adj.P.Val']<p.value,]),adj.P.Val=DERes[DERes[,'adj.P.Val']<p.value,'adj.P.Val'])
 
 	DERes_adjp0.05.exprs.1<-unique(merge(exprs.1,DERes_adjp0.05,by.x="row.names",by.y="ID",all.y=T))##取DE的表达谱##
-	DERes_adjp0.05.exprs.2<-unique(merge(exprs.2,DERes_adjp0.05,by.x="row.names",by.y="ID",all.y=T))
 	rownames(DERes_adjp0.05.exprs.1)<-DERes_adjp0.05.exprs.1[,'Row.names']
 	ncol_DERes_adjp0.05.exprs.1<-ncol(DERes_adjp0.05.exprs.1)-1
 	DERes_adjp0.05.exprs.1<-DERes_adjp0.05.exprs.1[,2:ncol_DERes_adjp0.05.exprs.1]
@@ -1126,7 +1121,8 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	tmp.1<-names(mean.DERes_adjp0.05.exprs.1)
 	mean.DERes_adjp0.05.exprs.1.dataframe<-data.frame(tmp.1,mean.DERes_adjp0.05.exprs.1)
 
-	DERes_adjp0.05.exprs.2<-unique(merge(exprs.2,DERes_adjp0.05,by.x="row.names",by.y="ID"))
+#	DERes_adjp0.05.exprs.2<-unique(merge(exprs.2,DERes_adjp0.05,by.x="row.names",by.y="ID"))
+	DERes_adjp0.05.exprs.2<-unique(merge(exprs.2,DERes_adjp0.05,by.x="row.names",by.y="ID",all.y=T))
 	rownames(DERes_adjp0.05.exprs.2)<-DERes_adjp0.05.exprs.2[,'Row.names']
 	ncol_DERes_adjp0.05.exprs.2<-ncol(DERes_adjp0.05.exprs.2)-1
 	DERes_adjp0.05.exprs.2<-DERes_adjp0.05.exprs.2[,2:ncol_DERes_adjp0.05.exprs.2]
@@ -1142,13 +1138,12 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 
 	e2<-mean.DERes_adjp0.05.exprs.2.dataframe##[,'mean.DERes_adjp0.05.exprs.2']
 	e2<-e2[,'mean.DERes_adjp0.05.exprs.2']
-	#e2<-e2[,'mean.DERes_adjp0.05.exprs.2']
 	rownames(RIF_reg_rank)<-RIF_reg_rank[,1]
 
 	for( i in 1:nreg.exprs){
-		#reg.exprs.1[rownames(RIF_reg_rank[i,]),]<-as.numeric(reg.exprs.1[rownames(RIF_reg_rank[i,]),])
+#		reg.exprs.1[rownames(RIF_reg_rank[i,]),]<-as.numeric(reg.exprs.1[rownames(RIF_reg_rank[i,]),])
 		cor1<-cor(t(DERes_adjp0.05.exprs.1),t(reg.exprs.1[rownames(RIF_reg_rank)[i],]),method="pearson",use="pairwise.complete.obs")
-		#reg.exprs.2[rownames(RIF_reg_rank[i,]),]<-as.numeric(reg.exprs.2[rownames(RIF_reg_rank[i,]),])
+#		reg.exprs.2[rownames(RIF_reg_rank[i,]),]<-as.numeric(reg.exprs.2[rownames(RIF_reg_rank[i,]),])
 		cor2<-cor(t(DERes_adjp0.05.exprs.2),t(reg.exprs.2[rownames(RIF_reg_rank)[i],]),method="pearson",use="pairwise.complete.obs")
 		preRIF<-(e1*cor1)^2-(e2*cor2)^2
 		preRIF<-apply(preRIF,2,sum)
@@ -1160,7 +1155,7 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	RIF_reg_rank<-RIF_reg_rank[order(-abs(as.numeric(RIF_reg_rank[,'RIFscore']))),]
 	RIF_reg_rank<-data.frame(TF=RIF_reg_rank$TF, RIF_score=RIF_reg_rank$RIFscore, RIF_rank=matrix(1:nrow(RIF_reg_rank),nrow(RIF_reg_rank),1) )
 	
-#################################################TED###############################################
+#################################################TED and TDD###############################################
 	gem_tf2target<-merge(tf2target,exprs,by.x='gene',by.y='row.names')
 	gem_tf2target<-unique(gem_tf2target[,c('TF','gene')])
 	gem_tf2target_rep<-table(gem_tf2target[,'TF']); gem_tf2target_rep<-as.data.frame(gem_tf2target_rep); colnames(gem_tf2target_rep)<-c('TF','gem_num')
@@ -1168,54 +1163,91 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	gem_tf2target_DCG_num<-merge(gem_tf2target_rep,tf2target_DCG_rep,by.x='TF',by.y='TF',all.x=T)
 	N<-length(unique(gem_tf2target[,'gene']))
 	K<-length(unique(DRsort.res$DCG2TF[,'DCG']))
-	TED_reg_rank<-data.frame(gem_tf2target_DCG_num,TEDscore=0)
-	for( i in 1:nrow(TED_reg_rank)){
-		TED_reg_rank[i,'TEDscore']<- -log(pbinom(TED_reg_rank[i,'DCG_num'],TED_reg_rank[i,'gem_num'],K/N,lower.tail=F))
-	}
-	TED_reg_rank<-TED_reg_rank[order(-as.numeric(TED_reg_rank[,'TEDscore'])),]
-	TED_reg_rank<-TED_reg_rank[,c('TF','TEDscore')]
-#	rownames(TED_reg_rank)<-TED_reg_rank[,'TF']
-	TED_reg_rank<-data.frame(TF=TED_reg_rank$TF, TED_score=TED_reg_rank$TEDscore, TED_rank=matrix(1:nrow(TED_reg_rank),nrow(TED_reg_rank),1) )
-
-#######################################################TDD##############################################
-	TDD_reg_rank<-data.frame(unique(gem_tf2target[,'TF']),TDDscore=0)
-	colnames(TDD_reg_rank)<-c('TF','TDDscore')
-#	DRsort.res$TF_bridged_DCL<-as.matrix(DRsort.res$TF_bridged_DCL)
-#	TDD_reg_rank<-as.matrix(TDD_reg_rank)
-#	gem_tf2target<-as.matrix(gem_tf2target)
+	TED_TDD_reg_rank<-data.frame(gem_tf2target_DCG_num,TEDscore=0, TED.p.value=NA, TED.fdr=NA, TDDscore=0, TDD.p.value=NA, TDD.fdr=NA)
 	
-	for( i in 1:nrow(TDD_reg_rank)) {
-		k<-dim(DRsort.res$TF_bridged_DCL[DRsort.res$TF_bridged_DCL[,'common.TF']==TDD_reg_rank[i,'TF'],c(1,2,3)])[1]
-		n1<-unique(DRsort.res$TF_bridged_DCL[DRsort.res$TF_bridged_DCL[,'common.TF']==TDD_reg_rank[i,'TF'],'Gene.1'])
-		n2<-unique(DRsort.res$TF_bridged_DCL[DRsort.res$TF_bridged_DCL[,'common.TF']==TDD_reg_rank[i,'TF'],'Gene.2'])
-		n3<-unique(gem_tf2target[gem_tf2target[,'TF']==TDD_reg_rank[i,'TF'],'gene'])
-		n<-length(unique(c(n1,n2,n3)))
-		if (k==0){
-			TDD_reg_rank[i,'TDDscore']<-0
+	for( i in 1:nrow(TED_TDD_reg_rank)){
+		TED_TDD_reg_rank[i,'TEDscore']<- -log2(pbinom(TED_TDD_reg_rank[i,'DCG_num'],TED_TDD_reg_rank[i,'gem_num'],K/N,lower.tail=F))
+		k<-dim(DRsort.res$TF_bridged_DCL[DRsort.res$TF_bridged_DCL[,'common.TF']==TED_TDD_reg_rank[i,'TF'],c(1,2,3)])[1]
+		if(k==0){
+			TED_TDD_reg_rank[i,'TDDscore']<-0
 		} else {
-			TDD_reg_rank[i,'TDDscore']<-k/(n*(n-1)/2)
+			TED_TDD_reg_rank[i,'TDDscore']<- k/(TED_TDD_reg_rank[i,'gem_num']*(TED_TDD_reg_rank[i,'gem_num']-1)/2)
 		}
+
 	}
-	TDD_reg_rank[,'TDDscore']<-as.numeric(TDD_reg_rank[,'TDDscore'])/as.numeric(max(TDD_reg_rank[,'TDDscore']))
+	
+	#########################################################Permutation_Times>0 then permutation##########################################################################3
+	if (Permutation_Times>0) {
+		gem_targetgene<-data.frame(gene=unique(gem_tf2target[,'gene']))
+		rownames(gem_targetgene)<-c(1:nrow(gem_targetgene))
+		DCG_targetgene<-data.frame(DCG=unique(DRsort.res$DCG2TF[,'DCG']))
+
+		random<-matrix(0,nrow(TED_TDD_reg_rank),Permutation_Times*2)
+		cat.pt<-0
+		for (i in 1:nrow(TED_TDD_reg_rank)){
+			for(j in 1:Permutation_Times){
+				if ( (i*100/nrow(TED_TDD_reg_rank))%/%10>cat.pt) {
+					cat.pt = cat.pt+1
+					cat(cat.pt*10,'%','\n')
+				}
+				###########################TED permutation###############################################################
+				a<-data.frame(gene=gem_targetgene[sample(1:nrow(gem_targetgene),TED_TDD_reg_rank[i,'gem_num']),])
+				b<-nrow(merge(a,DCG_targetgene,by.x='gene',by.y='DCG'))
+				random[i,j]<- -log2(pbinom(b,TED_TDD_reg_rank[i,'gem_num'],K/N,lower.tail=F))
+				
+				###########################TDD permutation###############################################################
+				ndcl<-0
+				for( x in 1:nrow(DRsort.res$DCL) ){
+					ngene.1<-sum(as.matrix(a$gene)[,1]==as.matrix(DRsort.res$DCL[x,'Gene.1'])[,1])
+					ngene.2<-sum(as.matrix(a$gene)[,1]==as.matrix(DRsort.res$DCL[x,'Gene.2'])[,1])
+					if (ngene.1>0 & ngene.2>0 ){
+						ndcl<- ndcl+1
+					}
+				}
+				if(ndcl==0){
+					random[i,j+Permutation_Times]<- 0.000000
+				} else {
+					random[i,j+Permutation_Times]<- ndcl/(TED_TDD_reg_rank[i,'gem_num']*(TED_TDD_reg_rank[i,'gem_num']-1)/2)
+				}		
+
+			}
+		}
+		TED_TDD_reg_rank_random<-cbind(TED_TDD_reg_rank,random)
+		for (i in 1:nrow(TED_TDD_reg_rank_random)){
+			TED_TDD_reg_rank_random[i,'TED.p.value']<-sum(TED_TDD_reg_rank_random[,10:(Permutation_Times+9)]>=TED_TDD_reg_rank_random[i,'TEDscore'])/length(as.matrix(TED_TDD_reg_rank_random[,10:(Permutation_Times+9)]))
+
+			TED_TDD_reg_rank_random[i,'TDD.p.value']<-sum(TED_TDD_reg_rank_random[,(Permutation_Times+10):ncol(TED_TDD_reg_rank_random)]>=TED_TDD_reg_rank_random[i,'TDDscore'])/length(as.matrix(TED_TDD_reg_rank_random[,(Permutation_Times+10):ncol(TED_TDD_reg_rank_random)]))
+
+		}
+		TED_TDD_reg_rank_random[,'TED.fdr']<-p.adjust(TED_TDD_reg_rank_random[,'TED.p.value'],method="BH")
+		TED_TDD_reg_rank_random[,'TDD.fdr']<-p.adjust(TED_TDD_reg_rank_random[,'TDD.p.value'],method="BH")
+		TED_TDD_reg_rank<-TED_TDD_reg_rank_random[,c(1:9)]
+	}
+	##############################################################End of Permutation_Times>0 then permutation#######################################################
+	
+	TED_reg_rank<-TED_TDD_reg_rank[,c('TF','TEDscore', 'TED.p.value', 'TED.fdr')]
+	if ( nrow( TED_reg_rank[is.infinite(TED_reg_rank[,'TEDscore']),] )>0 ){
+	TED_reg_rank_number<-TED_reg_rank[!is.infinite(TED_reg_rank[,'TEDscore']),]
+	TED_reg_rank_number<-TED_reg_rank_number[order(-as.numeric(TED_reg_rank_number[,'TEDscore'])),]
+	TED_reg_rank<-rbind(TED_reg_rank_number,TED_reg_rank[is.infinite(TED_reg_rank[,'TEDscore']),])
+	} else {
+	TED_reg_rank<-TED_reg_rank[order(-as.numeric(TED_reg_rank[,'TEDscore'])),]
+	}
+	TED_reg_rank<-data.frame(TF=TED_reg_rank$TF, TED_score=TED_reg_rank$TEDscore, TED_rank=matrix(1:nrow(TED_reg_rank),nrow(TED_reg_rank),1), TED_p.value=TED_reg_rank$TED.p.value, TED_FDR=TED_reg_rank$TED.fdr )
+	
+	TDD_reg_rank<-TED_TDD_reg_rank[,c('TF','TDDscore', 'TDD.p.value', 'TDD.fdr')]
+	TDD_reg_rank[,'TDDscore']<-TDD_reg_rank[,'TDDscore']/max(TDD_reg_rank[,'TDDscore'])
 	TDD_reg_rank<-TDD_reg_rank[order(-as.numeric(TDD_reg_rank[,'TDDscore'])),]
-#	rownames(TDD_reg_rank)<-TDD_reg_rank[,'TF']
-#	TDD_reg_rank<-as.data.frame(TDD_reg_rank)
-	TDD_reg_rank<-data.frame(TF=TDD_reg_rank$TF, TDD_score=TDD_reg_rank$TDDscore, TDD_rank=matrix(1:nrow(TDD_reg_rank),nrow(TDD_reg_rank),1) )
-	if ( nrow(TED_reg_rank) > nrow(TDD_reg_rank) ){
-		rank.1<-merge(TED_reg_rank,TDD_reg_rank,by.x='TF',by.y='TF',all.x=T)
-	} else {
-		rank.1<-merge(TED_reg_rank,TDD_reg_rank,by.x='TF',by.y='TF',all.y=T)
-	}
-	if ( nrow(rank.1) > nrow(RIF_reg_rank) ){
-		rank<-merge(rank.1,RIF_reg_rank,by.x='TF',by.y='TF',all.x=T)
-	} else {
-		rank<-merge(rank.1,RIF_reg_rank,by.x='TF',by.y='TF',all.y=T)
-	}
+	TDD_reg_rank<-data.frame(TF=TDD_reg_rank$TF, TDD_score=TDD_reg_rank$TDDscore, TDD_rank=matrix(1:nrow(TDD_reg_rank),nrow(TDD_reg_rank),1), TDD_p.value=TDD_reg_rank$TDD.p.value, TDD_FDR=TDD_reg_rank$TDD.fdr )
+
+	rank.1<-merge(TED_reg_rank,TDD_reg_rank,by.x='TF',by.y='TF')
+	rank<-merge(rank.1,RIF_reg_rank,by.x='TF',by.y='TF',all.x=T)
 	rank<-rank[order(as.numeric(rank[,'TED_rank'])),]
 	return(rank)
-	
-	#list(TED_reg_rank=TED_reg_rank,TDD_reg_rank=TDD_reg_rank,RIF_reg_rank=RIF_reg_rank)
 }
+
+	
+
 
 
 

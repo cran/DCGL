@@ -1,1 +1,5 @@
 export(ASC,DCe,DCp,DCsum,DRplot,DRrank,DRsort,expressionBasedfilter,LFC,LRC,percentLinkfilter,qLinkfilter,rLinkfilter,varianceBasedfilter,WGCNA)
+
+import(igraph)
+
+importFrom(limma,lmFit,eBayes,topTable)

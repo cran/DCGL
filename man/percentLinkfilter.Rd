@@ -5,7 +5,8 @@
   Keep a fraction (specified with 'cutoff') of the links (gene pairs) with the highest max correlation values.
 }
 \usage{
-percentLinkfilter(exprs.1, exprs.2, cutoff = 0.25, r.method = c("pearson", "spearman")[1])
+percentLinkfilter(exprs.1, exprs.2, cutoff = 0.25, 
+	r.method = c("pearson", "spearman")[1])
 }
 \arguments{
   \item{exprs.1}{ a data frame or matrix for condition A, with rows as variables (genes) and columns as samples. }
