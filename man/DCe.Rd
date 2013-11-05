@@ -1,6 +1,6 @@
 \name{DCe}
 \alias{DCe}
-\title{ Identify DCGs (Differential Coexpressed Genes) and DCLs (Differential Coexpressed Links) }
+\title{ Identify DCGs (Differentially Coexpressed Genes) and DCLs (Differentially Coexpressed Links) }
 \description{
   The algorithm first determines DCLs using a LFC model originally proposed for differential expression analysis, and then determines DCGs 
   with their surrounding links enriched for DCLs.   

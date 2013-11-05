@@ -7,13 +7,13 @@ Identify DRGs (Differential regulated Genes) and DRLs (Differential regulated Li
   The algorithm is to determine DRGs and DRLs from DCGs and DCLs by TF-to-target interaction knowledge.   
 }
 \usage{
-DRsort(DCGs, DCLs, tf2target, exprs)
+DRsort(DCGs, DCLs, tf2target, expGenes)
 }
 \arguments{
   \item{DCGs}{ a data frame or matrix for DCGs list. }
   \item{DCLs}{ a data frame or matrix for DCLs list. }
   \item{tf2target}{ a data frame or matrix for TF-to-target interaction pairs. }
-  \item{exprs}{ a data frame or matrix for expression dataset, with rows as variables (genes) and columns as samples. }
+  \item{expGenes}{ a list for measured genes by array }
 }
 \details{
 DRsort, is aimed to sift DCGs and DCLs according to regulation knowledge.
@@ -53,7 +53,10 @@ DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],
 DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.25)
 
 ## Sorting out DRGs and DRLs from DCsum-outputted results
-\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs[1:100,])}
+\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,expGenes)}
+## or only sorting out DRGs and DRLs from DCe-outputted results
+\donttest{DRsort.res<-DRsort(DCe.res$DCGs,DCe.res$DCLs,tf2target,expGenes)}
+
 
 ## DRGs list
 \donttest{DRsort.res$DRGs[1:3,]}

@@ -7,13 +7,17 @@ Visualization of DRLs
 	Graphical Representation of TF2target_DCL-centered and TF_bridged_DCL-centered networks
 }
 \usage{
-DRplot(DRsort.res, type = c("both", "TF2target_DCL", "TF_bridged_DCL")[1], 
-       intgenelist = NULL, 
-       vsize=5,asize=0.25,lcex=0.3,ewidth=1,
-       figname = c("TF2target_DCL.pdf", "TF_bridged_DCL.pdf"))
+DRplot(DCGs, DCLs, tf2target, expGenes,
+	type = c("both", "TF2target_DCL", "TF_bridged_DCL")[1], 
+	intgenelist = NULL, 
+	vsize=5,asize=0.25,lcex=0.3,ewidth=1,
+	figname = c("TF2target_DCL.pdf", "TF_bridged_DCL.pdf"))
 }
 \arguments{
-  \item{DRsort.res}{ a list of result of DRsort, contains four components.}
+  \item{DCGs}{ a data frame or matrix for DCGs list. }
+  \item{DCLs}{ a data frame or matrix for DCLs list. }
+  \item{tf2target}{ a data frame or matrix for TF-to-target interaction pairs. }
+  \item{expGenes}{ a list for measured genes by array}
   \item{type}{ a character string to determine which type of DRLs ('TF2target_DCL' or 'TF_bridged_DCL' or 'both') will be plotted; default is 'both'.}
   \item{intgenelist}{a list of gene symbols, which contains only one column to display your interesting genes symbol; default is NULL}
   \item{vsize}{a numeric of node size}
@@ -42,14 +46,15 @@ data(exprs)
 ## (exprs.1) and condition 2 (exprs.2) respectively
 exprs.1<-exprs[1:100,1:16]
 exprs.2<-exprs[1:100,17:63]
+expGenes<-rownames(exprs)
 
 data(tf2target)
-data(intgenelist)
 DCp.res<-DCp(exprs.1,exprs.2,link.method = 'qth',cutoff=0.25)
 DCe.res<-DCe(exprs.1,exprs.2,link.method = 'qth',cutoff=0.25,nbins=10,p=0.1)
 DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.4)
-DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,exprs[1:100,])
-DRplot.res<-DRplot(DRsort.res,
+DRplot.res<-DRplot(DCsum.res$DCGs,DCsum.res$DCLs,
+	tf2target,
+	expGenes,
 	type='TF_bridged_DCL',
 	intgenelist=NULL,
 	vsize=5,asize=0.25,lcex=0.3,ewidth=1,
@@ -60,7 +65,10 @@ DRplot.res$TF2target_DCL[1:3,]
 DRplot.res$TF_bridged_DCL[1:3,]
 
 ## plot sub-network by predefined gene(s)
-DRplot.int.res<-DRplot(DRsort.res,
+data(intgenelist)
+DRplot.int.res<-DRplot(DCsum.res$DCGs,DCsum.res$DCLs,
+	tf2target,
+	expGenes,
 	type='TF_bridged_DCL',
 	intgenelist=intgenelist,
 	vsize=5,asize=0.25,lcex=0.3,ewidth=1,

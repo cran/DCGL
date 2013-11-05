@@ -1,4 +1,4 @@
-.packageName <- "DCGL"
+#.packageName <- "DCGL"
   #####################################################################################################
   ## a gene filtering function: Genes which have a Between-Experiment Mean  Expression Signal (BEMES) lower than the median of BEMES's 
   ## of all genes will be filtered out. 
@@ -323,7 +323,6 @@ return(C_r)
 	} else if (min(ncol(exprs.1),ncol(exprs.2))<5 ) {
 		warning('the minimum number of columns is less than five and the result may not be reliable.')
 	}
-
 	m <- nrow(exprs.1) # exprs.1, exprs.2 is the expression data for different conditions.
   	if (m>5000) warning('the number of genes exceeds 5000 and the program may takes long time to run.')
 	genes = rownames(exprs.1)
@@ -374,10 +373,6 @@ return(C_r)
 	number_uniq = dC.length$length
 #	rm(list=c('nzero.vec','nzero.sm','squares','squares.sm','ss'))
 	
-	#detach(cor.filtered)
-
- 
-  
  ########################################################################################################################
  ## Disturb the sample labels for the two conditions and re-assign the samples to two datasets,then calculate the 'dC0' for 
  ## N times and then pool all the dC0 together to construct a 'NULL' distribution.
@@ -386,6 +381,7 @@ return(C_r)
 		dC0 <- matrix(nrow=length(genes),ncol=N)
 		rownames(dC0) <- genes
 		exprs <- cbind(exprs.1,exprs.2)
+		expSamples <- colnames(exprs)
 		n.1 = ncol(exprs.1)
 		n.2 = ncol(exprs.2)
 		cat.j = 0
@@ -404,31 +400,14 @@ return(C_r)
                 		qth =   qLinkfilter(exprs.1,exprs.2,r.method=r.method,cutoff=cutoff),
                 		percent = percentLinkfilter(exprs.1,exprs.2,r.method=r.method,cutoff=cutoff)
         		)
-#			attach(cor.filtered)
-#  			corfiltered_1 = cor_filtered$cor.filtered$cor.filtered.1
-#  			cor_filtered_2 = cor_filtered$cor.filtered$cor.filtered.2
-#  			rm(cor_filtered)
-
-#  			squares = (cor_filtered_1-cor_filtered_2)^2
-#  			number_uniq_0 = apply(cor_filtered_1!=0 | cor_filtered_2!=0,1,sum)
-#  			ss = apply(squares,1,sum)
-#  			LNED.result.0 = numeric(number_uniq_0)
-#  			LNED.result.0[number_uniq_0!=0] = sqrt(ss[number_uniq_0!=0])/sqrt(number_uniq[number_uniq_0!=0])
 			dC0.j <- calc.dC(cor.filtered$cor.filtered.1,cor.filtered$cor.filtered.2,cor.filtered$genes)
-  			dC0[,j] = dC0.j$dC
-			
-#			detach(cor.filtered)
-   		}
+  		dC0[,j] = dC0.j$dC
+		}
 
 		p.value = switch(N.type,
 			gene_by_gene = apply(cbind(dC0,dC),1,function(x) sum(x[1:(length(x)-1)]>x[length(x)],na.rm=T)/length(!is.na(x[1:(length(x)-1)]))),
 			pooled = sapply(dC,function(x) sum(as.vector(dC0)>x,na.rm=T)/length(!is.na(as.vector(dC0))))
 		)
-#		p.value <- vector()
-#		for(k in 1:m){
-#			p <- sum(LNED.result[k]<dC0)/(N*m);
-#			p.value <- c(p.value,p);
-#		}
   		q.value <- p.adjust(p.value,method=q.method)
   		Result <- data.frame(dC=dC,links=number_uniq,p.value=p.value,q.value=q.value);
   		row.names(Result) <- genes;
@@ -477,17 +456,17 @@ function(exprs.1,exprs.2,link.method=c('qth','rth','percent')[1],cutoff=0.25,r.m
 	#attach(cor.filtered)
 	rth.1 = cor.filtered$rth.1
 	rth.2 = cor.filtered$rth.2
-	cor.filtered.1 = cor.filtered$cor.filtered.1
-	cor.filtered.2 = cor.filtered$cor.filtered.2
+	cor.filtered.1 = cor.filtered$cor.filtered.1; cor.filtered.1[is.na(cor.filtered.1)] = 0
+	cor.filtered.2 = cor.filtered$cor.filtered.2; cor.filtered.2[is.na(cor.filtered.2)] = 0
 
 	
   	#############################################################
   	## decide three sets of correlation pairs and organize them into two-columned matrices.
   	#############################################################  	
   	
-  	idx.same = (cor.filtered.1*cor.filtered.2)>0
-  	idx.diff = (cor.filtered.1*cor.filtered.2)<0
-  	idx.switched = (cor.filtered.1*cor.filtered.2<0)& ( abs(cor.filtered.1)>=rth.1 & abs(cor.filtered.2)>=rth.2 )
+  	idx.same = (cor.filtered.1*cor.filtered.2)>0; idx.same[is.na(idx.same)] <- TRUE  ##fixing special cases where cor = NA (caused by at least one constant gene expression vector)
+  	idx.diff = (cor.filtered.1*cor.filtered.2)<0; idx.diff[is.na(idx.diff)] <- FALSE
+  	idx.switched = (cor.filtered.1*cor.filtered.2<0)& ( abs(cor.filtered.1)>=rth.1 & abs(cor.filtered.2)>=rth.2 ); idx.switched[is.na(idx.switched)] <- FALSE
   	
   	cor.same = cbind(cor.filtered.1[idx.same],cor.filtered.2[idx.same])
   	rownames(cor.same) <- names(cor.filtered.1)[idx.same]
@@ -501,7 +480,7 @@ function(exprs.1,exprs.2,link.method=c('qth','rth','percent')[1],cutoff=0.25,r.m
 # use strsplit to get two-column edge specification. 	
 # 	name.rows = matrix(rep(genes,m),m,m,byrow=T)
 #  	name.columns = matrix(rep(genes,m),m,m)
-  	
+#	browser()  	
 	if ( is.null( rownames(cor.same) ) ) {name.same = NULL}
 	if ( !is.null( rownames(cor.same) ) ) {
 		name.same = strsplit(rownames(cor.same),',')
@@ -823,97 +802,73 @@ function(exprs.1,exprs.2,power=12,variant='WGCNA') {
   # DCLs: a data frame or matrix for DCLs list.
   # tf2target: a data frame or matrix for regulator-to-target interaction pairs.
   ######################################################################################################################
-"DRsort" <- function(DCGs, DCLs, tf2target, exprs) {
-
-	######有表达谱的TF#############
-	TFinexpression<-merge(tf2target,exprs,by.x='TF',by.y='row.names')
-	TFinexpression<-unique(as.character(TFinexpression[,'TF']))
-
-	tf2target <- matrix(as.character(unlist(tf2target)),ncol = ncol(tf2target))
+"DRsort" <- function(DCGs, DCLs, tf2target, expGenes) {
+	if (!('DCG' %in% colnames(DCGs))) DCGs <- data.frame(DCG=rownames(DCGs),DCGs)
+	if (!('DCG' %in% colnames(DCLs))) {
+		DCLs <- DCL.connect.DCG(DCLs,DCGs)
+	} ## if input DCLs do not have a "DCG" field, reduce the DCLs to those connecting to DCGs and identify the involved DCGs.
 	tf2target <- data.frame(tf2target)
 	colnames(tf2target) <- c('TF','target')
-
+	####### END update 09/12/2013 #####################################################################################################
+	###### TFs with expression data##########
+	TFinexpression<-intersect(as.character(tf2target$TF),as.character(expGenes)) ### changed from merge to intersect on 9/16/2013
+	TFinexpression<-unique(TFinexpression)
 	#######################################     DCG: add one field 'DCGisTF' to indicate whether the DCG is a TF or not        ##################################
-	#cat('DCG: Add one field \'DCGisTF\' to indicate whether the DCG is a TF or not\n')
 	TFs <- unique(tf2target$TF)
 	DCGs <- data.frame(DCGisTF=FALSE,DCGs)
 	TF.idx <- as.character(DCGs$DCG) %in% TFs
 	DCGs$DCGisTF[TF.idx] <- TRUE
-	DCGs <- DCGs[,c('DCG','DCGisTF','dC','DCp.p','All.links.DCe','DC.links','DCL.same','DCL.diff','DCL.switch')]
-	
-	#DCGisTF<-merge(tf2target,DCG,by.x="TF",by.y="DCG",all.y=T)
-	#colnames(DCGisTF)[1:2] <- c('DCG','target')	
-	#DCGisTF <- DCGisTF[,c('DCG','target','geneid','keggid','keggname','dC','DCp.p','All.links.DCe','DC.links','DCL.same','DCL.diff','DCL.switch')]
-	#DCGisTF[!is.na(DCTisTF$target),'target'] <- 'True'
-	#DCGisTF[is.na(DCTisTF$target),'target'] <- 'False'
-	#colnames(DCGisTF)[2] <- 'DCGisTF'
-	#DCGisTF <- unique(DCGisTF)
-
-	#DCG <- DCGisTF
+	DCGs[,c(1,2)] <- DCGs[,c(2,1)]
+	colnames(DCGs)[1:2] <- c('DCG','DCGisTF')
 	#######################################   DCG: add one field 'Upstream_TFofDCG' to indicate the TF(s) of the DCG    #############################
 	#cat('DCG: Add one field \'Upstream_TFofDCG\' to indicate the TF(s) of the DCG\n')
 	DCGistarget<-merge(tf2target,DCGs,by.x="target",by.y="DCG",all.y=T)
 	colnames(DCGistarget)[1:2] <- c('DCG','Upstream_TFofDCG')
-	DCGistarget <- DCGistarget[,c('DCG','Upstream_TFofDCG','DCGisTF','dC','DCp.p','All.links.DCe','DC.links','DCL.same','DCL.diff','DCL.switch')]
-	DCG2TF <- data.frame(DCG=DCGistarget$DCG,TF=DCGistarget$Upstream_TFofDCG)    ######### this object is outputted for easing TED calculation.
-	
-	
-	
-	DCGs.TF <- as.character(unlist(by(DCG2TF$TF,factor(DCG2TF$DCG,ordered=T),paste,collapse=';')))	
-	DCG2TF.byDCG <- data.frame(DCG=levels(factor(DCG2TF$DCG,ordered=T)),TF=DCGs.TF)
+	#DCGistarget <- DCGistarget[,c('DCG','Upstream_TFofDCG','DCGisTF','dC','DCp.p','All.links.DCe','DC.links','DCL.same','DCL.diff','DCL.switch')]
+	DCG2TF <- unique(data.frame(DCG=DCGistarget$DCG,TF=DCGistarget$Upstream_TFofDCG))
+	DCG2TF <- DCG2TF[!is.na(DCG2TF[,2]),] ### records with NA value for TF were removed. 10/2/2013 
+	if (nrow(DCG2TF)==0) {warning('No DCG2TF is found!\n'); return(NULL)}	    
+######### this object is outputted for easing TED calculation.
+	DCG.factor <- factor(DCG2TF$DCG,levels=unique(DCG2TF$DCG),ordered=T)
+	DCGs.TF <- as.character(unlist(by(DCG2TF$TF,DCG.factor,paste,collapse=';')))	
+	DCG2TF.byDCG <- data.frame(DCG=levels(DCG.factor),TF=DCGs.TF)
 	DCGs <- merge(DCG2TF.byDCG,DCGs,by.x='DCG',by.y='DCG',all.y=T)
-	colnames(DCGs) <- c('DCG','Upstream_TFofDCG','DCGisTF','dC','DCp.p','All.links.DCe','DC.links','DCL.same','DCL.diff','DCL.switch')	
-
-	#######################################  DCL: Add one field 'TF' to indicate the internal TF of the DCL pair   ############################
-	#colnames(DCL) c('Gene.1','Gene.2',,'cor.1','cor.2','type','DCG','cor.diff')
-	#cat('DCL: Add one field \'TF\' to indicate the internal TF of the DCL pair\n')
+	colnames(DCGs)[1:2] <- c('DCG','Upstream_TFofDCG')
+	#######################################  DCL: Add one field 'internal.TF' to indicate the internal TF of the DCL pair   ############################
 	tf.target <- paste(tf2target[,'TF'],tf2target[,'target'],sep='; ')
 	DCL.pair1 <- paste(DCLs$Gene.1,DCLs$Gene.2, sep='; ')
 	TF1.idx <- DCL.pair1 %in% tf.target
-	
 	DCL.pair2 <- paste(DCLs$Gene.2,DCLs$Gene.1, sep='; ')
 	TF2.idx <- DCL.pair2 %in% tf.target
-	
 	DCLs <- data.frame(TF=NA,DCLs)
 	DCLs[TF1.idx,'TF'] <- as.character(DCLs[TF1.idx,'Gene.1'])
 	DCLs[TF2.idx,'TF'] <- as.character(DCLs[TF2.idx,'Gene.2'])
 	DCLs[TF1.idx & TF2.idx, 'TF'] <- paste(as.character(DCLs[TF1.idx & TF2.idx,'Gene.1']),as.character(DCLs[TF1.idx & TF2.idx,'Gene.2']),sep='; ')
-	
-	colnames(DCLs) <- c('internal.TF','Gene.1','Gene.2','cor.1','cor.2','type','cor.diff','DCG')
-
-	#DCL1 <- DCL
+	colnames(DCLs)[1] <- 'internal.TF'
 	#######################################  DCL: Add one field 'common.TF' to indicate the common TF(s) of the DCL pair        ##############
-	#colnames(DCL) c('internal.TF','Gene.1','Gene.2','cor.1','cor.2','type','DCG','cor.diff')
 	#cat('DCL: Add one field \'common.TF\' to indicate the common TF(s) of the DCL pair \n')
 	tfbridgedDCL<-merge(DCLs,tf2target,by.x="Gene.1",by.y="target") ####nrow of tfbridgedDCL is less than nrow of DCL###
-	colnames(tfbridgedDCL)<- c('Gene.1','internal.TF','Gene.2','cor.1','cor.2','type','cor.diff','DCG','TF.of.g1')   ## add the 'TF' that regulates 'Gene.1'
-	
+	colnames(tfbridgedDCL)[1:2]<- c('Gene.1','internal.TF')   ## add the 'TF' that regulates 'Gene.1'
+	colnames(tfbridgedDCL)[ncol(tfbridgedDCL)] <- 'TF.of.g1' ### added on 9/12/2013
 	tfbridgedDCL <- merge(tf2target,tfbridgedDCL,by.x=c('TF','target'),by.y=c('TF.of.g1','Gene.2'))
-	colnames(tfbridgedDCL) <- c('common.TF','Gene.2','Gene.1','internal.TF', 'cor.1','cor.2','type','cor.diff','GeneisDCG')  ## extract the rows in which 'TF' that regulates Gene.1 and Gene.2 both.
+	colnames(tfbridgedDCL)[1:2] <- c('common.TF','Gene.2')  ## extract the rows in which 'TF' that regulates Gene.1 and Gene.2 both.
 	tfbridgedDCL <- unique(tfbridgedDCL)
-	
-	tfbridgedDCL<-data.frame(common.TFisDCG=FALSE,tfbridgedDCL)
+	if (nrow(tfbridgedDCL)==0) {warning('No TF-bridged-DCL is found!\n'); return(NULL)}
+	tfbridgedDCL<-data.frame(common.TFisDCG=FALSE,tfbridgedDCL) 
 	common.TFDCG.idx <- as.character(tfbridgedDCL$common.TF) %in% as.character(DCGs[DCGs[,'DCGisTF'],'DCG'])
 	tfbridgedDCL$common.TFisDCG[common.TFDCG.idx]<-TRUE
-#	tfbridgedDCL<-tfbridgedDCL[,c('common.TF','common.TFisDCG','Gene.2','Gene.1','internal.TF', 'geneid.1','keggid.1','keggname.1','geneid.2','keggid.2','keggname.2','cor.1','cor.2','type','GeneisDCG')]
-	
 	tfbridgedDCL<-data.frame(common.TFinexprs=FALSE,tfbridgedDCL)
 	common.TF.exprsid <- as.character(tfbridgedDCL$common.TF) %in% TFinexpression
 	tfbridgedDCL$common.TFinexprs[common.TF.exprsid]<-TRUE
-	tfbridgedDCL<-tfbridgedDCL[,c('common.TF','Gene.1','Gene.2','internal.TF','common.TFisDCG','common.TFinexprs', 'cor.1','cor.2','type','cor.diff','GeneisDCG')]
-
-	commonTF <- as.character(unlist( by(tfbridgedDCL$common.TF,factor(as.character(paste(tfbridgedDCL$Gene.1,tfbridgedDCL$Gene.2,sep='; ')),ordered=T),paste,collapse='; ')  ))        
-	DCLsst.pairID <- levels(factor(as.character(paste(tfbridgedDCL$Gene.1,tfbridgedDCL$Gene.2,sep='; ')),ordered=T))
-	commonTF <- data.frame(pairID=DCLsst.pairID,common.TF=commonTF)
+	Pairs <- as.character(paste(tfbridgedDCL$Gene.1,tfbridgedDCL$Gene.2,sep='; '))
+	Pairs.factor <- factor(Pairs,levels=unique(Pairs),ordered=T)
+	commonTF <- as.character(unlist( by(tfbridgedDCL$common.TF,Pairs.factor,paste,collapse='; ')  ))        
+	commonTF <- data.frame(pairID=levels(Pairs.factor),common.TF=commonTF)
 	DCL.pairID <- paste(DCLs$Gene.1,DCLs$Gene.2,sep='; ')
 	DCLs <- data.frame(pairID=DCL.pairID,DCLs)
-	
 	DCLs <- merge(commonTF,DCLs,by.x='pairID',by.y='pairID',all.y=T)
-	
 	DRGs<-DCGs[DCGs[,'DCGisTF'] | !is.na(DCGs[,'Upstream_TFofDCG']),]
 	DRLs<-DCLs[!is.na(DCLs[,'common.TF']) | !is.na(DCLs[,'internal.TF']),]	
-		
-	
 	list(DCGs=DCGs, DCLs=DCLs, DRGs=DRGs, DRLs=DRLs, DCG2TF=DCG2TF, TF_bridged_DCL=tfbridgedDCL)
 }
 
@@ -1004,7 +959,7 @@ function(exprs.1,exprs.2,power=12,variant='WGCNA') {
 		warning ("the edge number of TF_bridged_DCL(>1000) is too large to display clearly and the program maybe need long time to run.\n")
 	}
 	node<-unique(c(as.character(relation$node1),as.character(relation$node2)))
-	DCG<-unique(c(as.character(unlist(strsplit(TF_bridged_DCL$GeneisDCG,'; '))),as.character(TF_bridged_DCL[TF_bridged_DCL[,'common.TFisDCG'],'comon.TF'])))
+	DCG<-unique(c(as.character(unlist(strsplit(TF_bridged_DCL$DCG,'; '))),as.character(TF_bridged_DCL[TF_bridged_DCL[,'common.TFisDCG'],'comon.TF'])))
 	TF<-unique(c(as.character(TF_bridged_DCL[!is.na(TF_bridged_DCL[,'internal.TF']),'internal.TF']),as.character(TF_bridged_DCL[,'common.TF'])))
 	notinexprs<-unique(as.character(TF_bridged_DCL[!TF_bridged_DCL[,'common.TFinexprs'],'common.TF']))
 	node.classes<-data.frame(TF= node %in% TF, DCG = node %in% DCG, inexprs = node %in% notinexprs)
@@ -1041,7 +996,8 @@ function(exprs.1,exprs.2,power=12,variant='WGCNA') {
   # figname: two character strings of figure names.
   ##############################################################################################################
 "DRplot"<-
-function(DRsort.res,type=c('both','TF2target_DCL','TF_bridged_DCL')[1],intgenelist=NULL,vsize=5,asize=0.25,lcex=0.3,ewidth=1,figname=c('TF2target_DCL.pdf','TF_bridged_DCL.pdf')){
+function(DCGs,DCLs,tf2target,expGenes,type=c('both','TF2target_DCL','TF_bridged_DCL')[1],intgenelist=NULL,vsize=5,asize=0.25,lcex=0.3,ewidth=1,figname=c('TF2target_DCL.pdf','TF_bridged_DCL.pdf')){
+	DRsort.res<-DRsort( DCGs, DCLs, tf2target, expGenes)
 	TF2target_DCL<-DRsort.res$DCLs[!is.na(DRsort.res$DCLs[,'internal.TF']),c('internal.TF','Gene.1','Gene.2','DCG')]
 	TF2target_DCL.1<-TF2target_DCL[TF2target_DCL[,'internal.TF']==TF2target_DCL[,'Gene.1'],c('internal.TF','Gene.2','DCG')]
 	colnames(TF2target_DCL.1)<-c('TF','Gene','DCG')
@@ -1053,7 +1009,7 @@ function(DRsort.res,type=c('both','TF2target_DCL','TF_bridged_DCL')[1],intgeneli
 	colnames(TF2target_DCL.4)<-c('TF','Gene','DCG')
 	TF2target_DCL<-unique(rbind(TF2target_DCL.1,TF2target_DCL.2,TF2target_DCL.3,TF2target_DCL.4))
 	TF2target_DCL.int<-TF2target_DCL
-	TF_bridged_DCL<-DRsort.res$TF_bridged_DCL[,c('common.TF','Gene.1','Gene.2','internal.TF','common.TFisDCG','common.TFinexprs','GeneisDCG')]
+	TF_bridged_DCL<-DRsort.res$TF_bridged_DCL[,c('common.TF','Gene.1','Gene.2','internal.TF','common.TFisDCG','common.TFinexprs','DCG')]
 	
 	if( !is.null(intgenelist) ){
 		target.gene.idx <- (TF_bridged_DCL$Gene.1 %in% as.character(intgenelist$GeneSymbol)) | (TF_bridged_DCL$Gene.2 %in% as.character(intgenelist$GeneSymbol)) | (TF_bridged_DCL$common.TF %in% as.character(intgenelist$GeneSymbol))
@@ -1095,9 +1051,141 @@ function(DRsort.res,type=c('both','TF2target_DCL','TF_bridged_DCL')[1],intgeneli
   # tf2target: a data frame or matrix for regulator-to-target interaction pairs.
   # exprs_design: a data frame or matrix for displaying microarray experimant design.
   ##################################################################################################################
-"DRrank"<-
-function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res,Permutation_Times=0){
+"DRrank" <- 
+function(DCGs,DCLs,tf2target,expGenes,rank.method=c('TED','TDD')[1],Nperm=0) {
+	tf2tar.exp <- merge(tf2target,expGenes,by.x=2,by.y=1)
+	tf2tar.exp <- cbind(as.character(tf2tar.exp[,2]),as.character(tf2tar.exp[,1])); colnames(tf2tar.exp) <- c('tf','target')
+	TF.tarINexp <- sort(unique(tf2tar.exp[,'tf']))
+	result <- data.frame(score=rep(0,length(TF.tarINexp)),p=1,p.adj=1)
+	rownames(result) <- TF.tarINexp
+	DRsort.res <- DRsort(DCGs, DCLs, tf2target, expGenes)
+	if (is.null(DRsort.res)) {
+		warning('nonsense 3-column score result generated!\n')
+		return(result)
+	}
+	DCG2TF <- DRsort.res$DCG2TF
+	TF_bridged_DCL <- DRsort.res$TF_bridged_DCL
+	score=switch(rank.method,
+		TED=TEDscore(expGenes,tf2target,DCG2TF),
+		TDD=TDDscore(expGenes,tf2target,TF_bridged_DCL)
+	)
+	if (Nperm==0) {
+		p <- q <- rep(NA,length(score))
+	} else {
+		score.rand <- matrix(0,nrow=length(score),ncol=Nperm)
+		rownames(score.rand) <- names(score)
+		for (i in 1:Nperm) {
+			tf2tar.exp <- merge(expGenes,tf2target,by.x=1,by.y=2)
+			tf2tar.exp <- tf2tar.exp[,c(2,1)] # revised 10/15/2013: limit permutation within expression-measured targets, not all possible targets
+			tf2target.r <- tf2target.random(tf2tar.exp)
+			DRsort.res.r <- DRsort(DCGs, DCLs, tf2target.r, expGenes)
+			if (is.null(DRsort.res.r)) {
+					warning('nonsense 3-column score result generated for random permutation!\n')
+					score.rand.i <- rep(0,length(TF.tarINexp)); names(score.rand.i) <- TF.tarINexp
+			}	else {	
+				DCG2TF.r <- DRsort.res.r$DCG2TF
+				TF_bridged_DCL.r <- DRsort.res.r$TF_bridged_DCL
+				score.rand.i <- switch(rank.method,
+					TED=TEDscore(expGenes,tf2target.r,DCG2TF.r),
+					TDD=TDDscore(expGenes,tf2target.r,TF_bridged_DCL.r)
+				)
+			}
+			score.rand.i <- score.rand.i[intersect(names(score),names(score.rand.i))] #randomly generated tf2target.r may cover a different number of targets in rownames(expr), so the involved TFs may be slightly different. 
+			score.rand[names(score.rand.i),i] <- score.rand.i				
+		}
+		p <- apply(score.rand>=(score %*% t(rep(1,Nperm))),1,sum)/Nperm # changed 10/15/2013: it was "<=" before. Now it is changed to ">=".
+		q <- p.adjust(p,method='BH')
+	}
+	result <- data.frame(score=score,p=p,p.adj=q)
+	result
+}
+
+TEDscore <- function(expGenes,tf2target,DCG2TF) {
+####### TEDscore() for measuring TFs' target enrichment of DCGs.
+	expGenes <- as.character(expGenes);	
+#	tf <- unique(as.character(tf2target[,1]))
+	DCG2TF <- cbind(as.character(DCG2TF[,'DCG']),as.character(DCG2TF[,'TF'])); colnames(DCG2TF) <- c('DCG','TF') 
+	tf2target <- cbind(as.character(tf2target[,1]),as.character(tf2target[,2])); colnames(tf2target) <- c('tf','target')
+	tf2tar.exp <- merge(tf2target,expGenes,by.x='target',by.y=1)
+	tf2tar.exp <- cbind(as.character(tf2tar.exp[,2]),as.character(tf2tar.exp[,1])); colnames(tf2tar.exp) <- c('tf','target')
+	TF.tarINexp <- sort(unique(tf2tar.exp[,'tf']))
+		
+	N <- length(unique(tf2tar.exp[,'target']))
+	K <- length(unique(DCG2TF[,'DCG']))
+	TF.DCGTar <- table(DCG2TF[,'TF'])
+	TF.expTar <- table(tf2tar.exp[,'tf'])
+	
+	TFs.DCGTar <- TFs.expTar <- rep(0,length(TF.tarINexp));	names(TFs.expTar) <- names(TFs.DCGTar) <- TF.tarINexp
+	TFs.DCGTar[names(TF.DCGTar)] <- TF.DCGTar
+	TFs.expTar[names(TF.expTar)] <- TF.expTar
+	
+	TED = -log10(pbinom(TFs.DCGTar-1,TFs.expTar,K/N,lower.tail=F))  
+	names(TED) <- TF.tarINexp
+	TED
+}
+
+TDDscore <- function(expGenes,tf2target,TF_bridged_DCL) {
+####### TDDscore() for measuring DCL density among TFs' expression-measured targets.
+	expGenes <- as.character(expGenes)	
+#	tf <- unique(as.character(tf2target[,1])) 
+	tf2target <- cbind(as.character(tf2target[,1]),as.character(tf2target[,2])); colnames(tf2target) <- c('tf','target')
+	tf2tar.exp <- merge(tf2target,expGenes,by.x='target',by.y=1)
+	tf2tar.exp <- cbind(as.character(tf2tar.exp[,2]),as.character(tf2tar.exp[,1])); colnames(tf2tar.exp) <- c('tf','target')
+	TF.tarINexp <- sort(unique(tf2tar.exp[,'tf']))
+	
+	TF.expTar <- table(tf2tar.exp[,'tf'])
+	TFs.expTar <- rep(0,length(TF.tarINexp)); names(TFs.expTar) <- TF.tarINexp
+	TFs.expTar[names(TF.expTar)] <- TF.expTar
+
+	DCL.count <- function(x) nrow(unique(x))
+	TF.factor <- factor(TF_bridged_DCL$common.TF,levels=unique(TF_bridged_DCL$common.TF),ordered=T) 
+	DCLcnt <- by(TF_bridged_DCL[,c('Gene.1','Gene.2')],TF.factor,DCL.count,simplify = TRUE)
+	names(DCLcnt) <- levels(TF.factor)
+	TF.DCLcnt <- rep(0,length(TF.tarINexp)); names(TF.DCLcnt) <- TF.tarINexp
+	TF.DCLcnt[names(DCLcnt)] <- DCLcnt
+	TDD <- TF.DCLcnt/(TFs.expTar*(TFs.expTar-1)/2)
+	TDD[is.na(TDD)] <- 0 ### give the value of 1 to TFs which have exactly one target in the exprs.
+	#browser()
+	TDD
+	
+}
+tf2target.random <- function(tf2target) {
+		tf2target <- data.frame(tf2target)
+		colnames(tf2target) <- c('TF','target')
+		targets <- unique(as.character(tf2target$target))
+		nTar <- sort(table(tf2target$TF))
+		factor.nTar <- factor(nTar,levels=unique(nTar),ordered=T)
+		TFs <- by(names(nTar),factor.nTar,paste,sep='')
+		Targets <- sapply(levels(factor.nTar),function(x) {sample(targets,x)})
+		comb <- mapply(expand.grid,TFs,Targets,SIMPLIFY=FALSE)
+		tf2target.r <- matrix(unlist(lapply(comb,function(x) unlist(t(x)))),ncol=2,byrow=T)
+		tf2target.r		
+}
+#### DCL.connect.DCG() for 1) reduce DCLs to those connecting with one or two DCG; 2) add a DCG field to the rightmost position. The DCG field can have two elements separated by ';'.
+DCL.connect.DCG <- function(DCLs,DCGs) {
+		DCL.rddt1 <- merge(DCLs,data.frame(DCG=DCGs$DCG),by.y=1,by.x='Gene.1'); DCL.rddt1 <- data.frame(DCL.rddt1,DCG=DCL.rddt1[,'Gene.1'])
+		DCL.rddt2 <- merge(DCLs,data.frame(DCG=DCGs$DCG),by.y=1,by.x='Gene.2'); DCL.rddt2 <- data.frame(DCL.rddt2,DCG=DCL.rddt2[,'Gene.2'])
+		DCL.rddt <- rbind(DCL.rddt1,DCL.rddt2)
+		DCL.rddt.names <- paste(DCL.rddt$Gene.1,DCL.rddt$Gene.2,sep='; ')
+		
+		link.count <- as.data.frame(table(DCL.rddt.names))
+		link.idx <- link.count[,2]
+		names(link.idx) <- link.count[,1]
+		DCL <- data.frame(unique(DCL.rddt[,1:(ncol(DCL.rddt)-1)]),DCG=NA)
+		rownames(DCL.rddt) <- paste('pair',1:nrow(DCL.rddt))
+		rownames(DCL.rddt)[DCL.rddt.names %in% names(link.idx[link.idx==1])] <- DCL.rddt.names[DCL.rddt.names %in% names(link.idx[link.idx==1])]  
+		rownames(DCL) <- paste(DCL$Gene.1,DCL$Gene.2,sep='; ')
+		DCL[names(link.idx)[link.idx==1],'DCG'] <- as.character(DCL.rddt[names(link.idx[link.idx==1]),'DCG'])  ### Warning:In max(i) : max all parameters not exist;returned -Inf
+		if ( dim(DCL[names(link.idx)[link.idx==2],])[1]>0 ) {
+			DCL[names(link.idx)[link.idx==2],'DCG'] <- names(link.idx)[link.idx==2]
+		}	
+		DCL
+}
+
+"RIF"<-
+function(exprs,exprs.1,exprs.2,tf2target,exprs_design,p.value=0.05){
 ############################################RIF#####################################
+	tf<-data.frame(TF=unique(tf2target[,1]))
 	reg.exprs.1<-unique(merge(exprs.1,tf,by.x="row.names",by.y="TF"))##取tf的表达谱##
 	rownames(reg.exprs.1)<-reg.exprs.1[,1]
 	RIF_reg_rank<-data.frame(TF=reg.exprs.1[,'Row.names'],RIFscore=FALSE)
@@ -1154,99 +1242,7 @@ function(exprs,exprs.1,exprs.2,tf,tf2target,exprs_design,p.value=0.05,DRsort.res
 	#colnames(RIF_reg_rank)<-c("Gene","RIF")
 	RIF_reg_rank<-RIF_reg_rank[order(-abs(as.numeric(RIF_reg_rank[,'RIFscore']))),]
 	RIF_reg_rank<-data.frame(TF=RIF_reg_rank$TF, RIF_score=RIF_reg_rank$RIFscore, RIF_rank=matrix(1:nrow(RIF_reg_rank),nrow(RIF_reg_rank),1) )
-	
-#################################################TED and TDD###############################################
-	gem_tf2target<-merge(tf2target,exprs,by.x='gene',by.y='row.names')
-	gem_tf2target<-unique(gem_tf2target[,c('TF','gene')])
-	gem_tf2target_rep<-table(gem_tf2target[,'TF']); gem_tf2target_rep<-as.data.frame(gem_tf2target_rep); colnames(gem_tf2target_rep)<-c('TF','gem_num')
-	tf2target_DCG_rep<-table(DRsort.res$DCG2TF[,'TF']); tf2target_DCG_rep<-as.data.frame(tf2target_DCG_rep); colnames(tf2target_DCG_rep)<-c('TF','DCG_num')
-	gem_tf2target_DCG_num<-merge(gem_tf2target_rep,tf2target_DCG_rep,by.x='TF',by.y='TF',all.x=T)
-	N<-length(unique(gem_tf2target[,'gene']))
-	K<-length(unique(DRsort.res$DCG2TF[,'DCG']))
-	TED_TDD_reg_rank<-data.frame(gem_tf2target_DCG_num,TEDscore=0, TED.p.value=NA, TED.fdr=NA, TDDscore=0, TDD.p.value=NA, TDD.fdr=NA)
-	
-	for( i in 1:nrow(TED_TDD_reg_rank)){
-		TED_TDD_reg_rank[i,'TEDscore']<- -log2(pbinom(TED_TDD_reg_rank[i,'DCG_num'],TED_TDD_reg_rank[i,'gem_num'],K/N,lower.tail=F))
-		k<-dim(DRsort.res$TF_bridged_DCL[DRsort.res$TF_bridged_DCL[,'common.TF']==TED_TDD_reg_rank[i,'TF'],c(1,2,3)])[1]
-		if(k==0){
-			TED_TDD_reg_rank[i,'TDDscore']<-0
-		} else {
-			TED_TDD_reg_rank[i,'TDDscore']<- k/(TED_TDD_reg_rank[i,'gem_num']*(TED_TDD_reg_rank[i,'gem_num']-1)/2)
-		}
-
-	}
-	
-	#########################################################Permutation_Times>0 then permutation##########################################################################3
-	if (Permutation_Times>0) {
-		gem_targetgene<-data.frame(gene=unique(gem_tf2target[,'gene']))
-		rownames(gem_targetgene)<-c(1:nrow(gem_targetgene))
-		DCG_targetgene<-data.frame(DCG=unique(DRsort.res$DCG2TF[,'DCG']))
-
-		random<-matrix(0,nrow(TED_TDD_reg_rank),Permutation_Times*2)
-		cat.pt<-0
-		for (i in 1:nrow(TED_TDD_reg_rank)){
-			for(j in 1:Permutation_Times){
-				if ( (i*100/nrow(TED_TDD_reg_rank))%/%10>cat.pt) {
-					cat.pt = cat.pt+1
-					cat(cat.pt*10,'%','\n')
-				}
-				###########################TED permutation###############################################################
-				a<-data.frame(gene=gem_targetgene[sample(1:nrow(gem_targetgene),TED_TDD_reg_rank[i,'gem_num']),])
-				b<-nrow(merge(a,DCG_targetgene,by.x='gene',by.y='DCG'))
-				random[i,j]<- -log2(pbinom(b,TED_TDD_reg_rank[i,'gem_num'],K/N,lower.tail=F))
-				
-				###########################TDD permutation###############################################################
-				ndcl<-0
-				for( x in 1:nrow(DRsort.res$DCL) ){
-					ngene.1<-sum(as.matrix(a$gene)[,1]==as.matrix(DRsort.res$DCL[x,'Gene.1'])[,1])
-					ngene.2<-sum(as.matrix(a$gene)[,1]==as.matrix(DRsort.res$DCL[x,'Gene.2'])[,1])
-					if (ngene.1>0 & ngene.2>0 ){
-						ndcl<- ndcl+1
-					}
-				}
-				if(ndcl==0){
-					random[i,j+Permutation_Times]<- 0.000000
-				} else {
-					random[i,j+Permutation_Times]<- ndcl/(TED_TDD_reg_rank[i,'gem_num']*(TED_TDD_reg_rank[i,'gem_num']-1)/2)
-				}		
-
-			}
-		}
-		TED_TDD_reg_rank_random<-cbind(TED_TDD_reg_rank,random)
-		for (i in 1:nrow(TED_TDD_reg_rank_random)){
-			TED_TDD_reg_rank_random[i,'TED.p.value']<-sum(TED_TDD_reg_rank_random[,10:(Permutation_Times+9)]>=TED_TDD_reg_rank_random[i,'TEDscore'])/length(as.matrix(TED_TDD_reg_rank_random[,10:(Permutation_Times+9)]))
-
-			TED_TDD_reg_rank_random[i,'TDD.p.value']<-sum(TED_TDD_reg_rank_random[,(Permutation_Times+10):ncol(TED_TDD_reg_rank_random)]>=TED_TDD_reg_rank_random[i,'TDDscore'])/length(as.matrix(TED_TDD_reg_rank_random[,(Permutation_Times+10):ncol(TED_TDD_reg_rank_random)]))
-
-		}
-		TED_TDD_reg_rank_random[,'TED.fdr']<-p.adjust(TED_TDD_reg_rank_random[,'TED.p.value'],method="BH")
-		TED_TDD_reg_rank_random[,'TDD.fdr']<-p.adjust(TED_TDD_reg_rank_random[,'TDD.p.value'],method="BH")
-		TED_TDD_reg_rank<-TED_TDD_reg_rank_random[,c(1:9)]
-	}
-	##############################################################End of Permutation_Times>0 then permutation#######################################################
-	
-	TED_reg_rank<-TED_TDD_reg_rank[,c('TF','TEDscore', 'TED.p.value', 'TED.fdr')]
-	if ( nrow( TED_reg_rank[is.infinite(TED_reg_rank[,'TEDscore']),] )>0 ){
-	TED_reg_rank_number<-TED_reg_rank[!is.infinite(TED_reg_rank[,'TEDscore']),]
-	TED_reg_rank_number<-TED_reg_rank_number[order(-as.numeric(TED_reg_rank_number[,'TEDscore'])),]
-	TED_reg_rank<-rbind(TED_reg_rank_number,TED_reg_rank[is.infinite(TED_reg_rank[,'TEDscore']),])
-	} else {
-	TED_reg_rank<-TED_reg_rank[order(-as.numeric(TED_reg_rank[,'TEDscore'])),]
-	}
-	TED_reg_rank<-data.frame(TF=TED_reg_rank$TF, TED_score=TED_reg_rank$TEDscore, TED_rank=matrix(1:nrow(TED_reg_rank),nrow(TED_reg_rank),1), TED_p.value=TED_reg_rank$TED.p.value, TED_FDR=TED_reg_rank$TED.fdr )
-	
-	TDD_reg_rank<-TED_TDD_reg_rank[,c('TF','TDDscore', 'TDD.p.value', 'TDD.fdr')]
-	TDD_reg_rank[,'TDDscore']<-TDD_reg_rank[,'TDDscore']/max(TDD_reg_rank[,'TDDscore'])
-	TDD_reg_rank<-TDD_reg_rank[order(-as.numeric(TDD_reg_rank[,'TDDscore'])),]
-	TDD_reg_rank<-data.frame(TF=TDD_reg_rank$TF, TDD_score=TDD_reg_rank$TDDscore, TDD_rank=matrix(1:nrow(TDD_reg_rank),nrow(TDD_reg_rank),1), TDD_p.value=TDD_reg_rank$TDD.p.value, TDD_FDR=TDD_reg_rank$TDD.fdr )
-
-	rank.1<-merge(TED_reg_rank,TDD_reg_rank,by.x='TF',by.y='TF')
-	rank<-merge(rank.1,RIF_reg_rank,by.x='TF',by.y='TF',all.x=T)
-	rank<-rank[order(as.numeric(rank[,'TED_rank'])),]
-	return(rank)
 }
-
-	
 
 
 
