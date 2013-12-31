@@ -19,19 +19,20 @@ rank regulators in terms of their potential relevance to the biological phenotyp
 \tabular{ll}{
 Package: \tab DCGL\cr
 Type: \tab Package\cr
-Version: \tab 2.1.0\cr
-Date: \tab 2013-11-05\cr
+Version: \tab 2.1.1\cr
+Date: \tab 2013-12-31\cr
 License: \tab GPL (>2)\cr
 LazyLoad: \tab yes\cr
 }
 }
 \author{
-Jing Yang, Hui Yu, Bao-Hong Liu
+Jing Yang, Hui Yu, Bao-Hong Liu, Zhongming Zhao, Lei Liu, Liang-Xiao Ma, Yi-Xue Li, Yuan-Yuan Li
 
 Maintainer: Bao-Hong Liu <bhliu@scbit.org>
 }
 \references{
-Friedrich Leisch,2008 Creating R Packages: A Tutorial
+Yang J, Yu H, Liu B-H, Zhao Z, Liu L, Ma L-X, Li Y-X and Li Y-Y. (2013) DCGL v2.0: An R Package for Unveiling Differential Regulation from Differential Co-expression. PLoS ONE 8(11): e79729. doi:10.1371/journal.pone.0079729
+Friedrich Leisch. (2008) Creating R Packages: A Tutorial
 }
 \keyword{ package }
 \examples{

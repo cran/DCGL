@@ -26,7 +26,7 @@ Differentially Expressed Genes (DEGs) and correlation coefficient between DEGs a
   A matrix to display RIF scores and ranks.
 }
 \references{
-Reverter, A., Hudson, N. J., Nagaraj, S. H., Perez-Enciso, M., Dalrymple, B. P., (2010) Regulatory impact factors: unraveling the transcriptional regulation of complex traits from expression data, 26, 896-904.
+Reverter, A., Hudson, N. J., Nagaraj, S. H., Perez-Enciso, M., Dalrymple, B. P. (2010) Regulatory impact factors: unraveling the transcriptional regulation of complex traits from expression data, 26, 896-904.
 }
 \author{Jing Yang, Hui Yu}
 

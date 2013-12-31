@@ -1,4 +1,4 @@
-5adcde9a0b62c5aa81dba2215bf45014 *DESCRIPTION
+38b22cc9e8db65d372990dbe3bf37cba *DESCRIPTION
 74adc77a76fc0b0a64a99c18bf2c97ed *NAMESPACE
 f61822e43c9e55273c2abdbc7919ea40 *R/DCGL.r
 460ddb7b073a4f47440b26ba37fabf76 *data/datalist
@@ -11,7 +11,7 @@ ea00c9a2109bbb01da73cdd798db9b6d *data/intgenelist.txt.gz
 c3fc69723427b7d1c23bb71ffcbb1897 *data/tf2target.RData
 49352c08ffc1539046e39733b46b4de2 *data/tf2target.txt.gz
 b8122ef26481a8313f80a7ded99677dd *man/ASC.Rd
-7a90bfa93295e4e829c025fe9985d1e2 *man/DCGL-package.Rd
+beb33f178f9ef60d147f81c1556c6c6d *man/DCGL-package.Rd
 6f6dd5af7c17fb1bfd12a7ed57535b15 *man/DCe.Rd
 71cc51d21b5bac3490498537c06f2722 *man/DCp.Rd
 3f21533ac3f66c8de9b9e527366198e3 *man/DCsum.Rd
@@ -20,7 +20,7 @@ b8122ef26481a8313f80a7ded99677dd *man/ASC.Rd
 e41753dc67026f87dae3c24a02ad94d1 *man/DRsort.Rd
 5ad250ede72c174781f237a359ef5910 *man/LFC.Rd
 5c4035ab73909a2699314a8ce6f88fed *man/LRC.Rd
-a09730bd1d6a9755a9f7afe290742be8 *man/RIF.Rd
+cc7d979dc64127b1effca4619f7a59a5 *man/RIF.Rd
 d95551bda2b05a5a60f3d375fec5acc4 *man/WGCNA.Rd
 7aed477bc7b0795c8078e97e20647172 *man/expressionBasedfilter.Rd
 4044a06e02b7d633e89e15f7f1dd756e *man/exprs.Rd
