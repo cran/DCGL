@@ -1,4 +1,4 @@
-38b22cc9e8db65d372990dbe3bf37cba *DESCRIPTION
+ffd234614424055c3db4060603d99f13 *DESCRIPTION
 74adc77a76fc0b0a64a99c18bf2c97ed *NAMESPACE
 f61822e43c9e55273c2abdbc7919ea40 *R/DCGL.r
 460ddb7b073a4f47440b26ba37fabf76 *data/datalist
@@ -11,13 +11,13 @@ ea00c9a2109bbb01da73cdd798db9b6d *data/intgenelist.txt.gz
 c3fc69723427b7d1c23bb71ffcbb1897 *data/tf2target.RData
 49352c08ffc1539046e39733b46b4de2 *data/tf2target.txt.gz
 b8122ef26481a8313f80a7ded99677dd *man/ASC.Rd
-beb33f178f9ef60d147f81c1556c6c6d *man/DCGL-package.Rd
+cd61fafd1d2e2ca4d11e618e0955f507 *man/DCGL-package.Rd
 6f6dd5af7c17fb1bfd12a7ed57535b15 *man/DCe.Rd
 71cc51d21b5bac3490498537c06f2722 *man/DCp.Rd
 3f21533ac3f66c8de9b9e527366198e3 *man/DCsum.Rd
 6a1736dfd25e77215d6e3ffe9e9bcd3c *man/DRplot.Rd
-31b991cc6c3322edea3c43a70f3e18b8 *man/DRrank.Rd
-e41753dc67026f87dae3c24a02ad94d1 *man/DRsort.Rd
+731565ecdcc735ff56ded31f393973e9 *man/DRrank.Rd
+80ed5a552448affb231485ac1b3d0d26 *man/DRsort.Rd
 5ad250ede72c174781f237a359ef5910 *man/LFC.Rd
 5c4035ab73909a2699314a8ce6f88fed *man/LRC.Rd
 cc7d979dc64127b1effca4619f7a59a5 *man/RIF.Rd

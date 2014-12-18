@@ -60,17 +60,17 @@ DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.4)
 
 ## rank all the potential TFs
 data(tf2target)
-\donttest{DRrank.TED.res<-DRrank(DCsum.res$DCGs, DCsum.res$DCLs, 
+DRrank.TED.res<-DRrank(DCsum.res$DCGs, DCsum.res$DCLs, 
 	tf2target, expGenes,
 	rank.method=c('TED','TDD')[1],
 	Nperm=0)
-}
-\donttest{DRrank.TED.res[1:3,]}
 
-\donttest{DRrank.TDD.res<-DRrank(DCsum.res$DCGs, DCsum.res$DCLs, 
+DRrank.TED.res[1:3,]
+
+DRrank.TDD.res<-DRrank(DCsum.res$DCGs, DCsum.res$DCLs, 
 	tf2target, expGenes,
 	rank.method=c('TED','TDD')[2],
 	Nperm=0)
-}
-\donttest{DRrank.TDD.res[1:3,]}
+
+DRrank.TDD.res[1:3,]
 }

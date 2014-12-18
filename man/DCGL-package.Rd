@@ -19,8 +19,8 @@ rank regulators in terms of their potential relevance to the biological phenotyp
 \tabular{ll}{
 Package: \tab DCGL\cr
 Type: \tab Package\cr
-Version: \tab 2.1.1\cr
-Date: \tab 2013-12-31\cr
+Version: \tab 2.1.2\cr
+Date: \tab 2014-12-18\cr
 License: \tab GPL (>2)\cr
 LazyLoad: \tab yes\cr
 }
@@ -45,50 +45,50 @@ exprs<-exprs[1:100,]
 exprs.1<-exprs[1:100,1:16] 
 exprs.2<-exprs[1:100,17:63]
 
-\donttest{DCp.res<-DCp(exprs.1,exprs.2,
+DCp.res<-DCp(exprs.1,exprs.2,
 	link.method='qth',cutoff=0.25,N=0)
-}
-\donttest{DCe.res<-DCe(exprs.1,exprs.2,
+
+DCe.res<-DCe(exprs.1,exprs.2,
 	link.method='qth',
 	cutoff=0.25,
 	nbins=10,p=0.1)
-}
+
 
 ## combine two Differential Co-expression Analysis results
-\donttest{DCsum.res<-DCsum(DCp.res,DCe.res,
+DCsum.res<-DCsum(DCp.res,DCe.res,
 	DCpcutoff=0.25,DCecutoff=0.4)
 DCsum.res$DCGs[1:3,]
 DCsum.res$DCLs[1:3,]
-}
+
 
 ## sort out differentially regulated genes and differentially regulated links
 data(tf2target) ## TF-to-target relationships
-\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,expGenes)}
+DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,expGenes)
 ## or
-\donttest{DRsort.res<-DRsort(DCe.res$DCGs,DCe.res$DCLs,tf2target,expGenes)}
+DRsort.res<-DRsort(DCe.res$DCGs,DCe.res$DCLs,tf2target,expGenes)
 
 ## plot differentially regulated links
-\donttest{DRplot.res<-DRplot(DCsum.res$DCGs,DCsum.res$DCLs,
+DRplot.res<-DRplot(DCsum.res$DCGs,DCsum.res$DCLs,
 	tf2target,
 	expGenes,
 	type='TF_bridged_DCL',
 	vsize=5,asize=0.25,lcex=0.3,ewidth=1,
 	figname=c('TF2target_DCL.pdf','TF_bridged_DCL.pdf'))
-}
+
 
 ## rank regulators by TED or TDD
-\donttest{DRrank.res<-DRrank(DCsum.res$DCGs,DCsum.res$DCLs,
+DRrank.res<-DRrank(DCsum.res$DCGs,DCsum.res$DCLs,
 	tf2target,
 	expGenes,
 	rank.method=c('TED','TDD')[1],
 	Nperm=0)
-}
+
 
 ## rank regulators by RIF\
 data(exprs_design)
-\donttest{RIF.res<-RIF(exprs,exprs.1,exprs.2,
+RIF.res<-RIF(exprs,exprs.1,exprs.2,
 	tf2target,
 	exprs_design,
 	p.value=0.05)
-}
+
 }

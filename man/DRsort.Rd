@@ -42,6 +42,7 @@ Regulated Links (DRLs).
 \examples{
 data(exprs)
 data(tf2target)
+expGenes<-rownames(exprs[1:100,])
 
 ## Two differential co-expression analysis methods
 DCp.res<-DCp(exprs[1:100,1:16],exprs[1:100,17:63],
@@ -53,16 +54,16 @@ DCe.res<-DCe(exprs[1:100,1:16],exprs[1:100,17:63],
 DCsum.res<-DCsum(DCp.res,DCe.res,DCpcutoff=0.25,DCecutoff=0.25)
 
 ## Sorting out DRGs and DRLs from DCsum-outputted results
-\donttest{DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,expGenes)}
+DRsort.res<-DRsort(DCsum.res$DCGs,DCsum.res$DCLs,tf2target,expGenes)
 ## or only sorting out DRGs and DRLs from DCe-outputted results
-\donttest{DRsort.res<-DRsort(DCe.res$DCGs,DCe.res$DCLs,tf2target,expGenes)}
+DRsort.res<-DRsort(DCe.res$DCGs,DCe.res$DCLs,tf2target,expGenes)
 
 
 ## DRGs list
-\donttest{DRsort.res$DRGs[1:3,]}
+DRsort.res$DRGs[1:3,]
 
 ## DRLs list
-\donttest{DRsort.res$DRLs[1:3,]}
+DRsort.res$DRLs[1:3,]
 }
 \keyword{ DRGs }
 \keyword{ DRLs }
